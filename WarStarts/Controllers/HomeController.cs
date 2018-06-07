@@ -41,6 +41,8 @@ namespace WarStarts.Controllers
         {
             CharactersList result = new CharactersList();
 
+            int counter = 0;
+
             foreach (var guild in Enum.GetValues(typeof(GuildEnum)))
             {
                 var response = HttpStatusCode.NoContent;
@@ -49,7 +51,9 @@ namespace WarStarts.Controllers
                 do
                 {
                     response = RequestManager.CallTibiaSite($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
-                } while (response != HttpStatusCode.OK && String.IsNullOrEmpty(responseString));
+                    counter += 1;
+
+                } while (response != HttpStatusCode.OK || counter >= 5);
 
                 var parsedHtmlPage = ParseHtmlPage(responseString);
 

@@ -25,8 +25,8 @@
 
 @{  <div class="firstGuild" style="padding-top:30px;">
         @{
-            List<WarStarts.Models.Character> newList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland && y.Status == "online").ToList();
-            List<WarStarts.Models.Character> secondList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers && y.Status == "online").ToList();
+            List<WarStarts.Models.Character> newList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).ToList();
+            List<WarStarts.Models.Character> secondList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).ToList();
         }
 
         <h2 style="color:green; display:inline">Showland - @newList.Count() online</h2>
@@ -51,25 +51,25 @@
 
                 <tr>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
                     </td>
                 </tr>
             </tbody>
@@ -93,25 +93,25 @@
 
                 <tr>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                     <td>
-                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
                     </td>
                 </tr>
             </tbody>
@@ -129,12 +129,12 @@
                 </tr>
             </thead>
             @{ 
-                var sdCharsReapers = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
-                var hSdCharsReapers = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 250 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
-                var mainsReapers = @Model.Character.Where(x => x.Level >= 251 && x.Level <= 999 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
-                var sdCharsShowland = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
-                var hSdCharsShowland = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 249 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
-                var mainsShowland = @Model.Character.Where(x => x.Level >= 250 && x.Level <= 999 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+                var sdCharsReapers = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var hSdCharsReapers = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 250 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var mainsReapers = @Model.Character.Where(x => x.Level >= 251 && x.Level <= 999 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var sdCharsShowland = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+                var hSdCharsShowland = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 249 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+                var mainsShowland = @Model.Character.Where(x => x.Level >= 250 && x.Level <= 999 && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
             }
             <tbody>
 
