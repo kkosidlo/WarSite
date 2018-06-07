@@ -1,0 +1,255 @@
+﻿
+@model WarStarts.Models.CharactersList
+
+@{
+    ViewBag.Title = "CharactersView";
+}
+<script>
+
+    setInterval("update();", 10000);
+
+    function update() {
+        window.location = location.href;
+    }
+
+    function CopyExiva(e)
+    {
+        var el = document.createElement('textarea');
+        el.value = "exiva \"" + e.innerText + "\"";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+    }
+</script>
+
+@{  <div class="firstGuild" style="padding-top:30px;">
+        @{
+            List<WarStarts.Models.Character> newList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland && y.Status == "online").ToList();
+            List<WarStarts.Models.Character> secondList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers && y.Status == "online").ToList();
+        }
+
+        <h2 style="color:green; display:inline">Showland - @newList.Count() online</h2>
+        <h2 style="color:red; display:inline; padding-left:300px">Reapers - @secondList.Count() online</h2>
+
+        <table class="table table-hover" style="width:50%;">
+            <thead>
+                <tr>
+                    <th>250+</th>
+                    <th>300+</th>
+                    <th>400+</th>
+                    <th>500+</th>
+                    <th>600+</th>
+                    <th>700+</th>
+                    <th>800+</th>
+                    <th>vs.</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <table class="table table-hover" style="width:50%; float:right; margin-top:-94px;">
+            <thead>
+                <tr>
+                    <th>250+</th>
+                    <th>300+</th>
+                    <th>400+</th>
+                    <th>500+</th>
+                    <th>600+</th>
+                    <th>700+</th>
+                    <th>800+</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 250 && x.Level < 300 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 300 && x.Level < 400 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 400 && x.Level < 500 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 500 && x.Level < 600 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 600 && x.Level < 700 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 700 && x.Level < 800 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                    <td>
+                        @Model.Character.Where(x => x.Level >= 800 && x.Level < 900 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <table class="table table-hover" style="width:50%;">
+            <thead>
+                <tr>
+                    <th>SD chars (45-129)</th>
+                    <th>H-lvl sd chars (130-249)</th>
+                    <th>Main chars (250+)</th>
+                    <th>vs.</th>
+
+                </tr>
+            </thead>
+            @{ 
+                var sdCharsReapers = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var hSdCharsReapers = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 250 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var mainsReapers = @Model.Character.Where(x => x.Level >= 251 && x.Level <= 999 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers);
+                var sdCharsShowland = @Model.Character.Where(x => x.Level >= 45 && x.Level <= 129 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+                var hSdCharsShowland = @Model.Character.Where(x => x.Level >= 130 && x.Level <= 249 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+                var mainsShowland = @Model.Character.Where(x => x.Level >= 250 && x.Level <= 999 && x.Status == "online" && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland);
+            }
+            <tbody>
+
+                <tr>
+                    <td>
+                        @sdCharsShowland.Count()
+                    </td>
+                    <td>
+                        @hSdCharsShowland.Count()
+                    </td>
+                    <td>
+                      @mainsShowland.Count()
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+        <table class="table table-hover" style="width:50%; float:right; margin-top:-94px">
+            <thead>
+                <tr>
+                    <th>SD chars (45-129)</th>
+                    <th>H-lvl sd chars (130-249)</th>
+                    <th>Main chars (250+)</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        @if (sdCharsReapers.Count() < 10)
+                        {
+                            <b><font color="green">@sdCharsReapers.Count()</font></b>
+                        }
+                        else if (sdCharsReapers.Count() >= 10 && sdCharsReapers.Count() <= 15)
+                        {
+                            <b><font color="orange">@sdCharsReapers.Count()</font></b>
+                        }
+                        else
+                        {
+                            <b><font color="red">@sdCharsReapers.Count()</font></b>
+                        }
+                    </td>
+                    <td>
+                        @if (hSdCharsReapers.Count() < 10)
+                        {
+                            <b><font color="green">@hSdCharsReapers.Count()</font></b>
+                        }
+                        else if (hSdCharsReapers.Count() >= 10 && hSdCharsReapers.Count() <= 15)
+                        {
+                            <b><font color="orange">@hSdCharsReapers.Count()</font></b>
+                        }
+                        else
+                        {
+                            <b><font color="red">@hSdCharsReapers.Count()</font></b>
+                        }
+                    </td>
+                    <td>
+                        @mainsReapers.Count() 
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <p><i>&nbsp; Use left mouse click next to the player name who you want to exiva in game so the spell can be copied over to your clipboard.</i></p>
+        <table class="table table-hover" style="width:50%; float:left">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Level</th>
+                    <th>Vocation</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in newList)
+            {
+                    <tr>
+                        <td onclick="CopyExiva(this)"><b><a style="color:#333" href="https://secure.tibia.com/community/?subtopic=characters&name=@item.CharacterName" target="_blank" />@item.CharacterName</b></td>
+                        <td>@item.Level</td>
+                        <td>@item.Vocation</td>
+                    </tr>}
+
+            </tbody>
+
+
+        </table>
+
+    </div>
+        <div class="secondGuild">            
+            <table class="table table-hover" style="width:50%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Level</th>
+                        <th>Vocation</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in secondList)
+                    {
+
+                        <tr>
+                            <td onclick="CopyExiva(this)"><b><a style="color:#333" href="https://secure.tibia.com/community/?subtopic=characters&name=@item.CharacterName" target="_blank" />@item.CharacterName</b></td>
+                            <td>@item.Level</td>
+                            <td>@item.Vocation</td>
+                        </tr>}
+
+                </tbody>
+
+
+            </table>
+        </div>
+        }
+
