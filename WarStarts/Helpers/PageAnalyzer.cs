@@ -47,10 +47,7 @@ namespace WarStarts.Helpers
 
                         character.Guild = guild;
 
-                        if (character.Status == "online")
-                        {
-                            list.Add(character);
-                        }
+                        list.Add(character);
                     }
                     else
                     {
@@ -79,10 +76,7 @@ namespace WarStarts.Helpers
 
                         character.Guild = guild;
 
-                        if (character.Status == "online")
-                        {
-                            list.Add(character);
-                        }
+                        list.Add(character);
                     }
                 }
             }
