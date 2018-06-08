@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using WarStarts.Helpers;
+using WarStarts.Jobs;
 using WarStarts.Models;
 
 namespace WarStarts.Controllers
@@ -46,10 +47,7 @@ namespace WarStarts.Controllers
                 var response = HttpStatusCode.NoContent;
                 string responseString = null;
 
-                do
-                {
-                    response = RequestManager.CallTibiaSite($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
-                } while (response != HttpStatusCode.OK && String.IsNullOrEmpty(responseString));
+                response = RequestManager.CallTibiaSite($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
 
                 var parsedHtmlPage = ParseHtmlPage(responseString);
 
