@@ -27,7 +27,7 @@ namespace WarStarts.Jobs
                     var parsedHtmlPage = ParseHtmlPage(responseString);
 
                     PageAnalyzer page = new PageAnalyzer();
-                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild, true));
+                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
                 }
             }
 

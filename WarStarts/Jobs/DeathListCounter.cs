@@ -8,82 +8,84 @@ using System.Net;
 using WarStarts.DataObjects;
 using WarStarts.Helpers;
 using WarStarts.Models;
-using WarStarts.Repositories;
+
 using static WarStarts.Controllers.HomeController;
 
 namespace WarStarts.Jobs
 {
-    public class DeathListCounter : Base
+    public class DeathListCounter
     {
+        private const string TibiaGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&GuildName=";
         public void Proceed()
         {
-            DeathListCounterRepository repo = new DeathListCounterRepository();
+            string connetionString = "Data Source=SQL6003.site4now.net;Initial Catalog=DB_A3C068_showland;User Id=DB_A3C068_showland_admin;Password=kacperQ123;";
+            string sql = null;
 
-            var members = repo.GetAllMembersFromDatabase();
+            var allMembers = GetMembers().Character;
 
-            foreach (var character in members)
+
+            var sortedCharacters = allMembers.Where(x => x.Level >= 250);
+
+
+            foreach (var character in sortedCharacters)
             {
-                for (int i = 0; i < character.Members.Count(); i++)
+                if (RequestManager.CallTibiaSite($"https://api.tibiadata.com/v2/characters/{character.CharacterName}.json", out var responseString) == HttpStatusCode.OK)
                 {
-                    if (RequestManager.CallTibiaSite($"https://api.tibiadata.com/v2/characters/{character.Members[i]}.json", out var responseString) == HttpStatusCode.OK)
+                    var deaths = JsonConvert.DeserializeObject<DeathsDO.RootObject>(responseString);
+
+                    foreach (var item in deaths.characters.deaths.ToList())
                     {
-                        var deaths = JsonConvert.DeserializeObject<DeathsDO.RootObject>(responseString);
+                        var death = JsonConvert.DeserializeObject<DeathDO.RootObject>(item.ToString());
 
-                        foreach (var item in deaths.characters.deaths.ToList())
+                        if (death.involved.Count == 1 && death.involved[0].name == character.CharacterName)
+                            continue;
+
+                        if (death.involved.Count() > 0 && DateTime.Parse(death.date.date.ToString()) >= new DateTime(2018, 5, 4))
                         {
-                            var death = JsonConvert.DeserializeObject<DeathDO.RootObject>(item.ToString());
+                            string killers = null;
 
-                            if (death.involved.Count == 1 && death.involved[0].name == character.Members[i])
-                                continue;
-
-                            if (death.involved.Count() > 0 && DateTime.Parse(death.date.date.ToString()) >= new DateTime(2018, 5, 4))
+                            foreach (var kill in death.involved)
                             {
-                                string killers = null;
+                                killers += kill.name + ";";
+                            }
 
-                                foreach (var kill in death.involved)
+                            string newString = killers.Substring(0, killers.Length - 1);
+                            int count;
+
+                            using (SqlConnection cnn = new SqlConnection(connetionString))
+                            {
+                                string sqlCheck = $"select count(*) from[dbo].[DeathList] where CharacterName = @CharacterName and Date = @Date";
+
+                                using (SqlCommand cmd = new SqlCommand(sqlCheck, cnn))
                                 {
-                                    killers += kill.name + ";";
+                                    cnn.Open();
+
+                                    cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.CharacterName;
+                                    cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
+                                    count = (int)cmd.ExecuteScalar();
                                 }
 
-                                string newString = killers.Substring(0, killers.Length - 1);
-                                int count;
 
-                                using (SqlConnection cnn = new SqlConnection(ConnectionString))
+                                if (count == 0)
                                 {
-                                    string sqlCheck = $"select count(*) from[dbo].[DeathList] where CharacterName = @CharacterName and Date = @Date";
+                                    sql = $"insert into [dbo].[DeathList] ([CharacterName], [Reason], [Guild], [Killers], [Level], [Date]) values(@CharacterName, @Reason, @Guild, @Killers, @Level, @Date)";
 
-                                    using (SqlCommand cmd = new SqlCommand(sqlCheck, cnn))
+                                    var guildEnumAsInt = (int)Enum.Parse(typeof(GuildEnum), character.Guild.ToString());
+
+                                    using (SqlCommand cmd = new SqlCommand(sql, cnn))
                                     {
-                                        cnn.Open();
-
-                                        cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.Members[i];
+                                        cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.CharacterName;
+                                        cmd.Parameters.AddWithValue("@Reason", OleDbType.VarWChar).Value = death.reason;
+                                        cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = guildEnumAsInt;
+                                        cmd.Parameters.AddWithValue("@Killers", OleDbType.VarWChar).Value = newString;
+                                        cmd.Parameters.AddWithValue("@Level", OleDbType.Integer).Value = death.level;
                                         cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
-                                        count = (int)cmd.ExecuteScalar();
-                                    }
-
-
-                                    if (count == 0)
-                                    {
-                                        string sql = $"insert into [dbo].[DeathList] ([CharacterName], [Reason], [Guild], [Killers], [Level], [Date]) values(@CharacterName, @Reason, @Guild, @Killers, @Level, @Date)";
-
-                                        var guildEnumAsInt = (int)Enum.Parse(typeof(GuildEnum), character.GuildType.ToString());
-
-                                        using (SqlCommand cmd = new SqlCommand(sql, cnn))
-                                        {
-                                            cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.Members[i];
-                                            cmd.Parameters.AddWithValue("@Reason", OleDbType.VarWChar).Value = death.reason;
-                                            cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = guildEnumAsInt;
-                                            cmd.Parameters.AddWithValue("@Killers", OleDbType.VarWChar).Value = newString;
-                                            cmd.Parameters.AddWithValue("@Level", OleDbType.Integer).Value = death.level;
-                                            cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
-                                            cmd.ExecuteNonQuery();
-                                        }
+                                        cmd.ExecuteNonQuery();
                                     }
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
@@ -99,7 +101,7 @@ namespace WarStarts.Jobs
                     var parsedHtmlPage = ParseHtmlPage(responseString);
 
                     PageAnalyzer page = new PageAnalyzer();
-                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild, true));
+                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
                 }
             }
 

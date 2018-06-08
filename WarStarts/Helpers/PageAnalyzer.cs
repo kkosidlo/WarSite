@@ -10,22 +10,18 @@ namespace WarStarts.Helpers
 {
     public class PageAnalyzer
     {
-        public List<Character> AnalyzePage(HtmlNodeCollection collection, GuildEnum guild, bool isAutomaticProcess = false)
+        public List<Character> AnalyzePage(HtmlNodeCollection collection, GuildEnum guild)
         {
             List<Character> list = new List<Character>();
 
             for (int j = 0; j < collection.Count(); j++)
             {
+                Character character = new Character();
+
                 if (collection[j].ChildNodes.Count.Equals(11))
                 {
                     if (j == 10)
                     {
-                        if (isAutomaticProcess && int.Parse(collection[10].ChildNodes[5].InnerText) < 250 
-                            || collection[j].ChildNodes[9].InnerText.Equals("offline"))
-                            continue;
-
-                        Character character = new Character();
-
                         for (int i = 1; i < collection[j].ChildNodes.Count; i += 2)
                         {
                             switch (i)
@@ -47,7 +43,6 @@ namespace WarStarts.Helpers
                                     character.Status = collection[j].ChildNodes[i].InnerText;
                                     break;
                             }
-
                         }
 
                         character.Guild = guild;
@@ -56,41 +51,32 @@ namespace WarStarts.Helpers
                     }
                     else
                     {
-                        Character character = new Character();
-                        
                         for (int i = 2; i < collection[j].ChildNodes.Count; i += 2)
                         {
-                            int value;
-
-                            if (isAutomaticProcess && int.TryParse(collection[j].ChildNodes[6].InnerText, out value) && value >= 250 
-                                || collection[j].ChildNodes[10].InnerText.Equals("offline"))
-                                continue;
-
-                                switch (i)
-                                {
-                                    case 2:
-                                        var index = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ").LastIndexOf(" (");
-                                        if (index > 0)
-                                            character.CharacterName = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ").Substring(0, index);
-                                        else
-                                            character.CharacterName = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ");
-                                        break;
-                                    case 4:
-                                        character.Vocation = collection[j].ChildNodes[i].InnerText;
-                                        break;
-                                    case 6:
-                                        character.Level = int.Parse(collection[j].ChildNodes[i].InnerText);
-                                        break;
-                                    case 10:
-                                        character.Status = collection[j].ChildNodes[i].InnerText;
-                                        break;
-                                }
+                            switch (i)
+                            {
+                                case 2:
+                                    var index = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ").LastIndexOf(" (");
+                                    if (index > 0)
+                                        character.CharacterName = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ").Substring(0, index);
+                                    else
+                                        character.CharacterName = collection[j].ChildNodes[i].InnerText.Replace("&#160;", " ");
+                                    break;
+                                case 4:
+                                    character.Vocation = collection[j].ChildNodes[i].InnerText;
+                                    break;
+                                case 6:
+                                    character.Level = int.Parse(collection[j].ChildNodes[i].InnerText);
+                                    break;
+                                case 10:
+                                    character.Status = collection[j].ChildNodes[i].InnerText;
+                                    break;
+                            }
                         }
 
                         character.Guild = guild;
 
-                        if (!string.IsNullOrEmpty(character.Status) && character.Status.Equals("online"))
-                            list.Add(character);
+                        list.Add(character);
                     }
                 }
             }
