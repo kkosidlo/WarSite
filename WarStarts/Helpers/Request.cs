@@ -9,7 +9,7 @@ namespace WarStarts.Helpers
 {
     public static class RequestManager
     {
-        public static HttpStatusCode CallTibiaSite(string url, out string responseString)
+        public static HttpStatusCode SendGETRequest(string url, out string responseString)
         {
             responseString = null;
 

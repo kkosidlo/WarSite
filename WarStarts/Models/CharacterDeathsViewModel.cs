@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using static WarStarts.Controllers.HomeController;
+﻿using System.Collections.Generic;
+using WarStarts.Enum;
 
 namespace WarStarts.Models
 {

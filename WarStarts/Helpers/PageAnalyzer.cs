@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using WarStarts.Enum;
 using WarStarts.Models;
-using static WarStarts.Controllers.HomeController;
 
 namespace WarStarts.Helpers
 {
@@ -16,14 +15,19 @@ namespace WarStarts.Helpers
 
             for (int j = 0; j < collection.Count(); j++)
             {
-                Character character = new Character();
-
                 if (collection[j].ChildNodes.Count.Equals(11))
                 {
+                    Character character = new Character();
+
                     if (j == 10)
                     {
                         for (int i = 1; i < collection[j].ChildNodes.Count; i += 2)
                         {
+                            if (collection[j].ChildNodes[9].InnerText == "offline")
+                            {
+                                continue;
+                            }
+
                             switch (i)
                             {
                                 case 1:
@@ -53,6 +57,11 @@ namespace WarStarts.Helpers
                     {
                         for (int i = 2; i < collection[j].ChildNodes.Count; i += 2)
                         {
+                            if (collection[j].ChildNodes[10].InnerText == "offline")
+                            {
+                                continue;
+                            }
+
                             switch (i)
                             {
                                 case 2:
@@ -76,7 +85,11 @@ namespace WarStarts.Helpers
 
                         character.Guild = guild;
 
-                        list.Add(character);
+                        if (!String.IsNullOrEmpty(character.Status))
+                        {
+                            list.Add(character);
+                        }
+
                     }
                 }
             }

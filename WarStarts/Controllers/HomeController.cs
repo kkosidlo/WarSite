@@ -1,29 +1,30 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
+using WarStarts.Classes;
+using WarStarts.Enum;
 using WarStarts.Helpers;
+using WarStarts.Jobs;
 using WarStarts.Models;
 
 namespace WarStarts.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Base
     {
-        private const string TibiaGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&GuildName=";
+        private const string TibiaGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&order=level_desc&GuildName=";
         private const string TibiaCharacterUrl = "https://secure.tibia.com/community/?subtopic=characters&name=";
 
 
         // GET: Home
         public ActionResult Index()
         {
+            //DeathListCounter death = new DeathListCounter();
+            //death.Proceed();
+
             return View("CharactersView", GetMembers());
         }
 
@@ -41,21 +42,22 @@ namespace WarStarts.Controllers
         {
             CharactersList result = new CharactersList();
 
-            foreach (var guild in Enum.GetValues(typeof(GuildEnum)))
+            foreach (var guild in GuildEnum.GetValues(typeof(GuildEnum)))
             {
                 var response = HttpStatusCode.NoContent;
                 string responseString = null;
 
-                do
+                response = RequestManager.SendGETRequest($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
+
+                if (!String.IsNullOrEmpty(responseString))
                 {
-                    response = RequestManager.CallTibiaSite($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
-                } while (response != HttpStatusCode.OK && String.IsNullOrEmpty(responseString));
+                    var parsedHtmlPage = ParseHtmlPage(responseString);
 
-                var parsedHtmlPage = ParseHtmlPage(responseString);
+                    PageAnalyzer page = new PageAnalyzer();
 
-                PageAnalyzer page = new PageAnalyzer();
+                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
+                }
 
-                result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
             }
 
             return result;
@@ -83,7 +85,7 @@ namespace WarStarts.Controllers
         private List<CharacterDeathsViewModel> GetLastKillsList()
         {
 
-            string connetionString = "Data Source=SQL6003.site4now.net;Initial Catalog=DB_A3C068_showland;User Id=DB_A3C068_showland_admin;Password=kacperQ123;";
+            string connetionString = "Server=tcp:showland.database.windows.net,1433;Initial Catalog=showland;Persist Security Info=False;User ID=showland;Password=kacperQ123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             string sql = $"select [CharacterName], [Guild], [Killers], [Level], [Date] from[dbo].[DeathList]";
 
             CharactersList list = new CharactersList();
@@ -139,7 +141,7 @@ namespace WarStarts.Controllers
 
             var itemz = GetMembersFromDb();
 
-            List<Member> newListOfMemberz = new List<Member>();
+            List<GuildMembers> newListOfMemberz = new List<GuildMembers>();
 
             foreach (var item in itemz)
             {
@@ -147,7 +149,7 @@ namespace WarStarts.Controllers
 
                 foreach (var givenGuild in splittedList)
                 {
-                    newListOfMemberz.Add(new Member
+                    newListOfMemberz.Add(new GuildMembers
                     {
                         Members = givenGuild,
                         Guild = item.Guild
@@ -199,49 +201,5 @@ namespace WarStarts.Controllers
 
             return newModel;
         }
-
-        private List<Member> GetMembersFromDb()
-        {
-            string connetionString = "Data Source=SQL6003.site4now.net;Initial Catalog=DB_A3C068_showland;User Id=DB_A3C068_showland_admin;Password=kacperQ123;";
-
-            string sql = $"select top 2 [Members], [Guild] from [dbo].[MembersList] order by date desc";
-
-            List<string> memberAsString = new List<string>();
-
-            List<Member> allMembers = new List<Member>();
-
-            using (SqlConnection connection = new SqlConnection(connetionString))
-            using (SqlCommand cmd = new SqlCommand(sql, connection))
-            {
-                connection.Open();
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            allMembers.Add(new Member
-                            {
-                                Members = reader.GetString(reader.GetOrdinal("Members")),
-                                Guild = (GuildEnum)reader.GetInt32(reader.GetOrdinal("Guild"))
-                            });
-                        }
-                    }
-                }
-            }
-            return allMembers;
-        }
-    public class Member
-    {
-        public string Members { get; set; }
-        public GuildEnum Guild { get; set; }
     }
-
-    public enum GuildEnum
-    {
-        Showland,   
-        Reapers
-    }
-}
 }

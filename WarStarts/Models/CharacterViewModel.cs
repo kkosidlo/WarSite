@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using WarStarts.Controllers;
-using static WarStarts.Controllers.HomeController;
+using WarStarts.Enum;
 
 namespace WarStarts.Models
 {
@@ -30,6 +27,7 @@ namespace WarStarts.Models
         public string Status { get; set; }
         public GuildEnum Guild { get; set; }
         public List<Death> Deaths { get; set; }
+
     }
 
     public class Death

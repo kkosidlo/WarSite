@@ -1,124 +1,126 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Text;
 using WarStarts.DataObjects;
+using WarStarts.Enum;
 using WarStarts.Helpers;
-using WarStarts.Models;
-
-using static WarStarts.Controllers.HomeController;
+using WarStarts.Transformators;
+using static WarStarts.DataObjects.DeathDO;
 
 namespace WarStarts.Jobs
 {
-    public class DeathListCounter
+    public class DeathListCounter : Base
     {
-        private const string TibiaGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&GuildName=";
         public void Proceed()
         {
-            string connetionString = "Data Source=SQL6003.site4now.net;Initial Catalog=DB_A3C068_showland;User Id=DB_A3C068_showland_admin;Password=kacperQ123;";
-            string sql = null;
+            var guildMembersFromDatabase = GetMembersFromDb();
+            var transformatedMembers = MembersList
+                .StringMembersListToListObject(guildMembersFromDatabase);
 
-            var allMembers = GetMembers().Character;
-
-
-            var sortedCharacters = allMembers.Where(x => x.Level >= 250);
-
-
-            foreach (var character in sortedCharacters)
+            foreach (var character in transformatedMembers)
             {
-                if (RequestManager.CallTibiaSite($"https://api.tibiadata.com/v2/characters/{character.CharacterName}.json", out var responseString) == HttpStatusCode.OK)
+                bool isRequestOk = RequestManager
+                    .SendGETRequest($"{TibiaAPICharacterUrl}{character.Name}.json",
+                    out var responseString) == HttpStatusCode.OK
+                    && !String.IsNullOrEmpty(responseString);
+
+                if (isRequestOk)
+                    ProcessResponse(responseString, character.Name, character.Guild);
+            }
+        }
+
+        private void ProcessResponse(string responseString, string characterNameInProcess, GuildEnum playerGuild)
+        {
+            var deaths = JsonConvert
+                .DeserializeObject<DeathsDO.RootObject>
+                (responseString);
+
+            foreach (var item in deaths.characters.deaths)
+            {
+                var death = JsonConvert
+                    .DeserializeObject<RootObject>
+                    (item.ToString());
+
+                bool isOwnDeath = death.involved.Count == 1 
+                    && death.involved[0].name == characterNameInProcess;
+                bool hasAnyDeaths = death.involved.Count() > 0;
+
+                if (isOwnDeath)
                 {
-                    var deaths = JsonConvert.DeserializeObject<DeathsDO.RootObject>(responseString);
+                    continue;
+                }
 
-                    foreach (var item in deaths.characters.deaths.ToList())
+                if (hasAnyDeaths)
+                {
+                    string deathString = BuildDeathString(death.involved);
+
+                    bool isInDatabase = DoesDeathExistInDatabase(
+                        characterNameInProcess, death.date.date);
+
+                    if (!isInDatabase)
                     {
-                        var death = JsonConvert.DeserializeObject<DeathDO.RootObject>(item.ToString());
-
-                        if (death.involved.Count == 1 && death.involved[0].name == character.CharacterName)
-                            continue;
-
-                        if (death.involved.Count() > 0 && DateTime.Parse(death.date.date.ToString()) >= new DateTime(2018, 5, 4))
-                        {
-                            string killers = null;
-
-                            foreach (var kill in death.involved)
-                            {
-                                killers += kill.name + ";";
-                            }
-
-                            string newString = killers.Substring(0, killers.Length - 1);
-                            int count;
-
-                            using (SqlConnection cnn = new SqlConnection(connetionString))
-                            {
-                                string sqlCheck = $"select count(*) from[dbo].[DeathList] where CharacterName = @CharacterName and Date = @Date";
-
-                                using (SqlCommand cmd = new SqlCommand(sqlCheck, cnn))
-                                {
-                                    cnn.Open();
-
-                                    cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.CharacterName;
-                                    cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
-                                    count = (int)cmd.ExecuteScalar();
-                                }
-
-
-                                if (count == 0)
-                                {
-                                    sql = $"insert into [dbo].[DeathList] ([CharacterName], [Reason], [Guild], [Killers], [Level], [Date]) values(@CharacterName, @Reason, @Guild, @Killers, @Level, @Date)";
-
-                                    var guildEnumAsInt = (int)Enum.Parse(typeof(GuildEnum), character.Guild.ToString());
-
-                                    using (SqlCommand cmd = new SqlCommand(sql, cnn))
-                                    {
-                                        cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = character.CharacterName;
-                                        cmd.Parameters.AddWithValue("@Reason", OleDbType.VarWChar).Value = death.reason;
-                                        cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = guildEnumAsInt;
-                                        cmd.Parameters.AddWithValue("@Killers", OleDbType.VarWChar).Value = newString;
-                                        cmd.Parameters.AddWithValue("@Level", OleDbType.Integer).Value = death.level;
-                                        cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
-                                        cmd.ExecuteNonQuery();
-                                    }
-                                }
-                            }
-                        }
+                        StoreDeathInDatabase(death, characterNameInProcess, deathString, playerGuild.ToString());
                     }
                 }
             }
         }
 
-        private CharactersList GetMembers()
+        private string BuildDeathString(List<Involved> involved)
         {
-            CharactersList result = new CharactersList();
+            StringBuilder sb = 
+                new StringBuilder();
 
-            foreach (var guild in Enum.GetValues(typeof(GuildEnum)))
+            foreach (var playerInvolved in involved)
             {
-                if (RequestManager.CallTibiaSite($"{ TibiaGuildUrl }{ guild.ToString() }", out var responseString) == HttpStatusCode.OK)
-                {
-                    var parsedHtmlPage = ParseHtmlPage(responseString);
-
-                    PageAnalyzer page = new PageAnalyzer();
-                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
-                }
+                sb.Append($"{playerInvolved.name};");
             }
 
-            return result;
+            return sb.ToString().TrimEnd(';');
         }
 
-        private HtmlNodeCollection ParseHtmlPage(string responseString)
+        private bool DoesDeathExistInDatabase(string characterName, string deathDate)
         {
-            HtmlDocument htmlDoc = new HtmlDocument();
+            using (SqlConnection cnn = new SqlConnection(ConnectionString))
+            {
+                string sqlCheck = $"SELECT COUNT(*) FROM [dbo].[DeathList]" +
+                                  $"WHERE CharacterName = @CharacterName AND Date = @Date";
+                    
+                using (SqlCommand cmd = new SqlCommand(sqlCheck, cnn))
+                {
+                    cnn.Open();
 
-            htmlDoc.LoadHtml(responseString);
+                    cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = characterName;
+                    cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(deathDate);
+                    int count = (int)cmd.ExecuteScalar();
 
-            var htmlbody = htmlDoc.DocumentNode.SelectSingleNode("//body");
+                    return count > 0;
+                }
+            }
+        }
 
-            var page = htmlbody.SelectNodes("//div[@class='InnerTableContainer']//div[@class='TableContentContainer']//table[@class='TableContent']")[0];
+        private void StoreDeathInDatabase(RootObject death, string characterName, string deathString, string characterGuild)
+        {
+            string sql = $"INSERT INTO [dbo].[DeathList] ([CharacterName], [Reason], [Guild], [Killers], [Level], [Date]) VALUES" +
+                         $"(@CharacterName, @Reason, @Guild, @Killers, @Level, @Date)";
 
-            return page.SelectNodes("//tr");
+            var guildEnumAsInt = (int)GuildEnum.Parse(typeof(GuildEnum), characterGuild);
+
+            using (SqlConnection cnn = new SqlConnection(ConnectionString))
+            using (SqlCommand cmd = new SqlCommand(sql, cnn))
+            {
+                cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = characterName;
+                cmd.Parameters.AddWithValue("@Reason", OleDbType.VarWChar).Value = death.reason;
+                cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = guildEnumAsInt;
+                cmd.Parameters.AddWithValue("@Killers", OleDbType.VarWChar).Value = deathString;
+                cmd.Parameters.AddWithValue("@Level", OleDbType.Integer).Value = death.level;
+                cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = DateTime.Parse(death.date.date);
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
