@@ -9,6 +9,10 @@ namespace WarStarts.Jobs
     public class Base : Controller
     {
         public string ConnectionString => "Server=tcp:showland.database.windows.net,1433;Initial Catalog=showland;Persist Security Info=False;User ID=showland;Password=kacperQ123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        public string ConnectionStringOld => "Data Source=SQL6003.site4now.net;Initial Catalog=DB_A3C068_showland;User Id=DB_A3C068_showland_admin;Password=kacperQ123;";
+
+
+        public string TibiaSiteGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&order=level_desc&GuildName=";
         public string TibiaAPICharacterUrl => "https://api.tibiadata.com/v2/characters/";
         public string TibiaAPIGuildUrl => "https://api.tibiadata.com/v2/guild/";
 

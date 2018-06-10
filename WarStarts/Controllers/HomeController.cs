@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -15,16 +16,8 @@ namespace WarStarts.Controllers
 {
     public class HomeController : Base
     {
-        private const string TibiaGuildUrl = "https://secure.tibia.com/community/?subtopic=guilds&page=view&order=level_desc&GuildName=";
-        private const string TibiaCharacterUrl = "https://secure.tibia.com/community/?subtopic=characters&name=";
-
-
-        // GET: Home
         public ActionResult Index()
         {
-            //DeathListCounter death = new DeathListCounter();
-            //death.Proceed();
-
             return View("CharactersView", GetMembers());
         }
 
@@ -47,15 +40,13 @@ namespace WarStarts.Controllers
                 var response = HttpStatusCode.NoContent;
                 string responseString = null;
 
-                response = RequestManager.SendGETRequest($"{ TibiaGuildUrl }{ guild.ToString() }", out responseString);
+                response = RequestManager.SendGETRequest($"{ TibiaSiteGuildUrl }{ guild.ToString() }", out responseString);
 
                 if (!String.IsNullOrEmpty(responseString))
                 {
-                    var parsedHtmlPage = ParseHtmlPage(responseString);
+                    var parsedHtmlPage = PageAnalyzer.ParseHtmlPage(responseString);
 
-                    PageAnalyzer page = new PageAnalyzer();
-
-                    result.Character.AddRange(page.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
+                    result.Character.AddRange(PageAnalyzer.AnalyzePage(parsedHtmlPage, (GuildEnum)guild));
                 }
 
             }
@@ -64,33 +55,14 @@ namespace WarStarts.Controllers
         }
 
 
-
-
-        private HtmlNodeCollection ParseHtmlPage(string responseString)
+        private CharactersList GetKillsListFromDatabase()
         {
-            HtmlDocument htmlDoc = new HtmlDocument();
-
-            htmlDoc.LoadHtml(responseString);
-
-            var htmlbody = htmlDoc.DocumentNode.SelectSingleNode("//body");
-
-            var page = htmlbody.SelectNodes("//div[@class='InnerTableContainer']//div[@class='TableContentContainer']//table[@class='TableContent']")[0];
-
-            return page.SelectNodes("//tr");
-        }
-
-
-
-
-        private List<CharacterDeathsViewModel> GetLastKillsList()
-        {
-
-            string connetionString = "Server=tcp:showland.database.windows.net,1433;Initial Catalog=showland;Persist Security Info=False;User ID=showland;Password=kacperQ123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-            string sql = $"select [CharacterName], [Guild], [Killers], [Level], [Date] from[dbo].[DeathList]";
+            string sql = $"SELECT [CharacterName], [Guild], [Killers], [Level], [Date] " +
+                         $"FROM [dbo].[DeathList]";
 
             CharactersList list = new CharactersList();
 
-            using (SqlConnection connection = new SqlConnection(connetionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             using (SqlCommand cmd = new SqlCommand(sql, connection))
             {
                 connection.Open();
@@ -118,6 +90,41 @@ namespace WarStarts.Controllers
                 }
             }
 
+            return list;
+        }
+
+        private void MoveDataFromOneDatabaseToAnother()
+        {
+            var oldDatabaseData = GetKillsListFromDatabase();
+
+            foreach (var item in oldDatabaseData.Character)
+            {
+                foreach (var death in item.Deaths)
+                {
+                    string sql = $"INSERT INTO [dbo].[DeathList] ([CharacterName], [Reason], [Guild], [Killers], [Level], [Date]) VALUES" +
+                      $"(@CharacterName, null, @Guild, @Killers, @Level, @Date)";
+
+                    using (SqlConnection cnn = new SqlConnection(ConnectionString))
+                    using (SqlCommand cmd = new SqlCommand(sql, cnn))
+                    {
+                        cnn.Open();
+
+                        cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = item.CharacterName;
+                        cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = death.Guild;
+                        cmd.Parameters.AddWithValue("@Killers", OleDbType.VarWChar).Value = death.Killers;
+                        cmd.Parameters.AddWithValue("@Level", OleDbType.Integer).Value = death.Level;
+                        cmd.Parameters.AddWithValue("@Date", OleDbType.DBDate).Value = death.Date;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
+        }
+
+
+        private List<CharacterDeathsViewModel> GetLastKillsList()
+        {
+            var list = GetKillsListFromDatabase();
 
             List<CharacterDeathsViewModel> model = new List<CharacterDeathsViewModel>();
 

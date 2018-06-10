@@ -9,7 +9,21 @@ namespace WarStarts.Helpers
 {
     public class PageAnalyzer
     {
-        public List<Character> AnalyzePage(HtmlNodeCollection collection, GuildEnum guild)
+
+        public static HtmlNodeCollection ParseHtmlPage(string responseString)
+        {
+            HtmlDocument htmlDoc = new HtmlDocument();
+
+            htmlDoc.LoadHtml(responseString);
+
+            var htmlbody = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+            var page = htmlbody.SelectNodes("//div[@class='InnerTableContainer']//div[@class='TableContentContainer']//table[@class='TableContent']")[0];
+
+            return page.SelectNodes("//tr");
+        }
+
+        public static List<Character> AnalyzePage(HtmlNodeCollection collection, GuildEnum guild)
         {
             List<Character> list = new List<Character>();
 

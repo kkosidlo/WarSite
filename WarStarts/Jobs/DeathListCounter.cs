@@ -113,6 +113,7 @@ namespace WarStarts.Jobs
             using (SqlConnection cnn = new SqlConnection(ConnectionString))
             using (SqlCommand cmd = new SqlCommand(sql, cnn))
             {
+                cnn.Open();
                 cmd.Parameters.AddWithValue("@CharacterName", OleDbType.VarWChar).Value = characterName;
                 cmd.Parameters.AddWithValue("@Reason", OleDbType.VarWChar).Value = death.reason;
                 cmd.Parameters.AddWithValue("@Guild", OleDbType.Integer).Value = guildEnumAsInt;
