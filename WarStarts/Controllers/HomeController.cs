@@ -39,8 +39,13 @@ namespace WarStarts.Controllers
             {
                 var response = HttpStatusCode.NoContent;
                 string responseString = null;
+                int counter = 0;
+                do
+                {
+                    response = RequestManager.SendGETRequest($"{ TibiaSiteGuildUrl }{ guild.ToString() }", out responseString);
+                    counter++;
+                } while (String.IsNullOrEmpty(responseString) && counter < 4);
 
-                response = RequestManager.SendGETRequest($"{ TibiaSiteGuildUrl }{ guild.ToString() }", out responseString);
 
                 if (!String.IsNullOrEmpty(responseString))
                 {
@@ -93,9 +98,47 @@ namespace WarStarts.Controllers
             return list;
         }
 
+        private CharactersList MoveGetKillsListFromDatabase()
+        {
+            string sql = $"SELECT [CharacterName], [Guild], [Killers], [Level], [Date] " +
+                         $"FROM [dbo].[DeathList]";
+
+            CharactersList list = new CharactersList();
+
+            using (SqlConnection connection = new SqlConnection(ConnectionStringOld))
+            using (SqlCommand cmd = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            Character character = new Character();
+                            Death death = new Death();
+
+                            character.CharacterName = reader.GetString(reader.GetOrdinal("CharacterName"));
+                            death.Killers = reader.GetString(reader.GetOrdinal("Killers"));
+                            death.Level = reader.GetInt32(reader.GetOrdinal("Level"));
+                            death.Guild = reader.GetInt32(reader.GetOrdinal("Guild"));
+                            death.Date = reader.GetDateTime(reader.GetOrdinal("Date"));
+
+
+                            character.Deaths.Add(death);
+                            list.Character.Add(character);
+                        }
+                    }
+                }
+            }
+
+            return list;
+        }
+
         private void MoveDataFromOneDatabaseToAnother()
         {
-            var oldDatabaseData = GetKillsListFromDatabase();
+            var oldDatabaseData = MoveGetKillsListFromDatabase();
 
             foreach (var item in oldDatabaseData.Character)
             {

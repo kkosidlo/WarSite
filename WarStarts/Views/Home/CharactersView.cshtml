@@ -29,7 +29,6 @@
             List<WarStarts.Models.Character> newList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == GuildEnum.Showland && y.Status == "online").ToList();
             List<WarStarts.Models.Character> secondList = Model.Character.OrderByDescending(x => x.Level).Where(y => y.Guild == GuildEnum.Reapers && y.Status == "online").ToList();
         }
-
         <h2 style="color:green; display:inline">Showland - @newList.Count() online</h2>
         <h2 style="color:red; display:inline; padding-left:300px">Reapers - @secondList.Count() online</h2>
 

@@ -15,8 +15,8 @@ namespace WarStarts
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
-            RecurringJob.AddOrUpdate(() => new DeathListCounter().Proceed(), Cron.MinuteInterval(5));
-            RecurringJob.AddOrUpdate(() => new MembersListCounter().Proceed(), Cron.HourInterval(1));
+            RecurringJob.AddOrUpdate(() => new DeathListCounter().Proceed(), Cron.MinuteInterval(7));
+            RecurringJob.AddOrUpdate(() => new MembersListCounter().Proceed(), Cron.HourInterval(2));
         }
     }
 }

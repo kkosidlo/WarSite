@@ -1,16 +1,17 @@
-﻿
+﻿@using WarStarts.Enum;
+
 @{
     ViewBag.Title = "KillsView";
 }
 
 <script>
 
-        setInterval("update();", 60000);
+    setInterval("update();", 60000);
 
-        function update() {
-            window.location = location.href;
-        }
-    </script>
+    function update() {
+        window.location = location.href;
+    }
+</script>
 
 
 @model  List<WarStarts.Models.CharacterDeathsViewModel>
@@ -20,8 +21,8 @@
     <p><i>Only characters with level 250 or above are included on this list. List is being automatically synchronized every 5 minutes.</i></p>
     <div>
         @{
-            var newList = Model.Select(x => x).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers && y.Level >= 250 && DateTime.Parse(y.TimeOfDeath) >= DateTime.Today).OrderByDescending(z => DateTime.Parse(z.TimeOfDeath).TimeOfDay).ThenBy(z => DateTime.Parse(z.TimeOfDeath).Date);
-            var secondList = Model.Select(x => x).Where(y => y.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland && y.Level >= 250 && DateTime.Parse(y.TimeOfDeath) >= DateTime.Today).OrderByDescending(z => DateTime.Parse(z.TimeOfDeath).TimeOfDay).ThenBy(z => DateTime.Parse(z.TimeOfDeath).Date);
+            var newList = Model.Select(x => x).Where(y => y.Guild == GuildEnum.Reapers && y.Level >= 250 && DateTime.Parse(y.TimeOfDeath) >= DateTime.Today).OrderByDescending(z => DateTime.Parse(z.TimeOfDeath).TimeOfDay).ThenBy(z => DateTime.Parse(z.TimeOfDeath).Date);
+            var secondList = Model.Select(x => x).Where(y => y.Guild == GuildEnum.Showland && y.Level >= 250 && DateTime.Parse(y.TimeOfDeath) >= DateTime.Today).OrderByDescending(z => DateTime.Parse(z.TimeOfDeath).TimeOfDay).ThenBy(z => DateTime.Parse(z.TimeOfDeath).Date);
         }
 
     </div>
@@ -31,196 +32,196 @@
 
     <h2 style="color:red; float:right; margin: -42px 370px 0px 0px;">Reapers kills: @secondList.Count()</h2>
 
-            <table class="table table-hover" style="width:50%;">
-                <thead>
-                    <tr>
-                        <th>250+</th>
-                        <th>300+</th>
-                        <th>400+</th>
-                        <th>500+</th>
-                        <th>600+</th>
-                        <th>700+</th>
-                        <th>800+</th>
-                        <th>vs.</th>
+    <table class="table table-hover" style="width:50%;">
+        <thead>
+            <tr>
+                <th>250+</th>
+                <th>300+</th>
+                <th>400+</th>
+                <th>500+</th>
+                <th>600+</th>
+                <th>700+</th>
+                <th>800+</th>
+                <th>vs.</th>
 
-                    </tr>
-                </thead>
+            </tr>
+        </thead>
 
-                <tbody>
+        <tbody>
 
-                    <tr>
-                        <td>
-                            @Model.Where(x => x.Level >= 250 && x.Level < 300 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 300 && x.Level < 400 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 400 && x.Level < 500 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 500 && x.Level < 600 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 600 && x.Level < 700 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 700 && x.Level < 800 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 800 && x.Level < 900 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Reapers).Count()
-                        </td>
-                    </tr>
-                    <tr></tr>
-                </tbody>
+            <tr>
+                <td>
+                    @Model.Where(x => x.Level >= 250 && x.Level < 300 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 300 && x.Level < 400 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 400 && x.Level < 500 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 500 && x.Level < 600 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 600 && x.Level < 700 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 700 && x.Level < 800 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 800 && x.Level < 900 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Reapers).Count()
+                </td>
+            </tr>
+            <tr></tr>
+        </tbody>
 
-            </table>
+    </table>
 
-            <table class="table table-hover" style="width:50%; float:right;margin-top:-94px">
-                <thead>
-                    <tr>
-                        <th>250+</th>
-                        <th>300+</th>
-                        <th>400+</th>
-                        <th>500+</th>
-                        <th>600+</th>
-                        <th>700+</th>
-                        <th>800+</th>
-                    </tr>
-                </thead>
+    <table class="table table-hover" style="width:50%; float:right;margin-top:-94px">
+        <thead>
+            <tr>
+                <th>250+</th>
+                <th>300+</th>
+                <th>400+</th>
+                <th>500+</th>
+                <th>600+</th>
+                <th>700+</th>
+                <th>800+</th>
+            </tr>
+        </thead>
 
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.Where(x => x.Level >= 250 && x.Level < 300 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 300 && x.Level < 400 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 400 && x.Level < 500 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 500 && x.Level < 600 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 600 && x.Level < 700 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 700 && x.Level < 800 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                        <td>
-                            @Model.Where(x => x.Level >= 800 && x.Level < 900 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == WarStarts.Controllers.HomeController.GuildEnum.Showland).Count()
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-
-
-
-
-            <table class="table table-hover" style="width:50%; float:left">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Level</th>
-                        <th>Killers</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        string generatedHtml;
-                        string nameCharacterLink1 = null;
-
-                    }
-                    @foreach (var item in newList)
-                    {
-                        generatedHtml = null;
-
-                        foreach (var itemchar in item.Killers)
-                        {
-                            if (itemchar == item.Killers.Last())
-                            {
-                                generatedHtml += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar}.</a>";
-                            }
-                            else
-                            {
-                                generatedHtml += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar},</a>";
-                            }
-                        }
-                        {
-                            nameCharacterLink1 = $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={item.Name}\" target=\"_blank\">{item.Name} </a>";
-                        }
-                        <tr>
-
-                            <td style="height:200px">@Html.Raw(nameCharacterLink1)</td>
-                            <td style="height:200px">@item.Level</td>
-                            <td style="height:200px;">
-                                <b style="display: inline; float:left">@DateTime.Parse(item.TimeOfDeath) killed by: </b>@Html.Raw(generatedHtml.TrimEnd(','))
-                            </td>
-                        </tr>
-                    }
-
-                </tbody>
-
-
-            </table>
-
-
-
-            <div>
-                @{
-
-                }
-
-            </div>
+        <tbody>
+            <tr>
+                <td>
+                    @Model.Where(x => x.Level >= 250 && x.Level < 300 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 300 && x.Level < 400 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 400 && x.Level < 500 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 500 && x.Level < 600 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 600 && x.Level < 700 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 700 && x.Level < 800 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+                <td>
+                    @Model.Where(x => x.Level >= 800 && x.Level < 900 && DateTime.Parse(x.TimeOfDeath) >= DateTime.Today && x.Guild == GuildEnum.Showland).Count()
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
 
 
 
 
-            <table class="table table-hover" style="width:50%;">
-                <thead>
+    <table class="table table-hover" style="width:50%; float:left">
+        <thead>
+            <tr>
                 <th>Name</th>
                 <th>Level</th>
                 <th>Killers</th>
-                </thead>
-                <tbody>
-                    @{
-                        string generatedHtml1 = null;
-                        string nameCharacterLink = null;
-                    }
-                    @foreach (var item in secondList)
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                string generatedHtml;
+                string nameCharacterLink1 = null;
+
+            }
+            @foreach (var item in newList)
+            {
+                generatedHtml = null;
+
+                foreach (var itemchar in item.Killers)
+                {
+                    if (itemchar == item.Killers.Last())
                     {
-                        generatedHtml1 = null;
-
-                        foreach (var itemchar in item.Killers)
-                        {
-                            if (itemchar == item.Killers.Last())
-                            {
-                                generatedHtml1 += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar}.</a>";
-                            }
-                            else
-                            {
-                                generatedHtml1 += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar},</a>";
-                            }
-                        }
-                        {
-                            nameCharacterLink = $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={item.Name}\" target=\"_blank\">{item.Name} </a>";
-                        }
-                        <tr>
-                            <td style="height:200px">@Html.Raw(nameCharacterLink)</td>
-                            <td style="height:200px">@item.Level</td>
-                            <td style="height:200px">
-                                <b style="display: inline; float:left">@DateTime.Parse(item.TimeOfDeath) killed by: </b>@Html.Raw(generatedHtml1.Substring(0, generatedHtml1.Length - 2))
-                            </td>
-                        </tr>
+                        generatedHtml += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar}.</a>";
                     }
+                    else
+                    {
+                        generatedHtml += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar},</a>";
+                    }
+                }
+                {
+                    nameCharacterLink1 = $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={item.Name}\" target=\"_blank\">{item.Name} </a>";
+                }
+                <tr>
 
-                </tbody>
+                    <td style="height:200px">@Html.Raw(nameCharacterLink1)</td>
+                    <td style="height:200px">@item.Level</td>
+                    <td style="height:200px;">
+                        <b style="display: inline; float:left">@DateTime.Parse(item.TimeOfDeath) killed by: </b>@Html.Raw(generatedHtml.TrimEnd(','))
+                    </td>
+                </tr>
+            }
+
+        </tbody>
 
 
-            </table>
+    </table>
+
+
+
+    <div>
+        @{
+
+        }
+
+    </div>
+
+
+
+
+
+    <table class="table table-hover" style="width:50%;">
+        <thead>
+        <th>Name</th>
+        <th>Level</th>
+        <th>Killers</th>
+        </thead>
+        <tbody>
+            @{
+                string generatedHtml1 = null;
+                string nameCharacterLink = null;
+            }
+            @foreach (var item in secondList)
+            {
+                generatedHtml1 = null;
+
+                foreach (var itemchar in item.Killers)
+                {
+                    if (itemchar == item.Killers.Last())
+                    {
+                        generatedHtml1 += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar}.</a>";
+                    }
+                    else
+                    {
+                        generatedHtml1 += $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={itemchar}\" target=\"_blank\">{itemchar},</a>";
+                    }
+                }
+                {
+                    nameCharacterLink = $"<a style=\"color:#333; float:left; display: inline\" href=\"https://secure.tibia.com/community/?subtopic=characters&name={item.Name}\" target=\"_blank\">{item.Name} </a>";
+                }
+                <tr>
+                    <td style="height:200px">@Html.Raw(nameCharacterLink)</td>
+                    <td style="height:200px">@item.Level</td>
+                    <td style="height:200px">
+                        <b style="display: inline; float:left">@DateTime.Parse(item.TimeOfDeath) killed by: </b>@Html.Raw(generatedHtml1.Substring(0, generatedHtml1.Length - 2))
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+
+    </table>
 }
 

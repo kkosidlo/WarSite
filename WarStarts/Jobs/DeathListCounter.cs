@@ -49,13 +49,14 @@ namespace WarStarts.Jobs
                 bool isOwnDeath = death.involved.Count == 1 
                     && death.involved[0].name == characterNameInProcess;
                 bool hasAnyDeaths = death.involved.Count() > 0;
+                bool isWorthDeathLevel = death.level >= 250;
 
                 if (isOwnDeath)
                 {
                     continue;
                 }
 
-                if (hasAnyDeaths)
+                if (hasAnyDeaths && isWorthDeathLevel)
                 {
                     string deathString = BuildDeathString(death.involved);
 
